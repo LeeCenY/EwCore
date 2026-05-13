@@ -1,0 +1,5 @@
+EverywhereCore.xcframework/
+EverywhereCore-*.xcframework.zip
+.build/
+.swiftpm/
+.DS_Store
