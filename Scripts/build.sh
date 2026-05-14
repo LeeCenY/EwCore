@@ -38,21 +38,17 @@ cd "$CORE_DIR"
 echo "→ go mod tidy"
 go mod tidy
 
-# Build tags enable optional features in upstream cores. We enable
-# every with_* tag sing-box ships, in alphabetical order. Trim if
-# binary size becomes a concern.
+# Build tags enable optional features in upstream cores. We ship the
+# subset that makes sense for an iOS NEPacketTunnelProvider client —
+# inbound/server-only tags and big-tree extras (tailscale, anthropic/
+# openai SDK service registries, ACME issuance, v2ray stats gRPC,
+# DHCP DNS probing) are dropped. See PATCHES.md for the rationale.
 BUILD_TAGS="\
-with_acme \
-with_ccm \
 with_clash_api \
-with_dhcp \
 with_grpc \
 with_gvisor \
-with_ocm \
 with_quic \
-with_tailscale \
 with_utls \
-with_v2ray_api \
 with_wireguard"
 
 # -s: strip Go symbol table.  -w: strip DWARF.  Together they remove
