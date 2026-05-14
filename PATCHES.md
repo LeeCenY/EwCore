@@ -84,10 +84,9 @@ sing-box keeps optional subsystems behind Go build tags. With no tag
 set, the corresponding `*_stub.go` files compile in and the feature
 returns "not included in this build" errors at runtime.
 
-`Scripts/build.sh` enables the full sing-box tag matrix minus three
-known-broken-on-Apple-platforms or known-deprecated tags (see
-exclusions below). The advertised list is reproducible — re-derive it
-any time against the module cache:
+`Scripts/build.sh` enables the subset of sing-box's tag matrix that
+matters to an iOS Network Extension client. The full list is
+reproducible — re-derive it any time against the module cache:
 
 ```bash
 ( cd go && go mod download github.com/sagernet/sing-box )
@@ -95,35 +94,36 @@ grep -rh '^//go:build' "$(go env GOMODCACHE)/github.com/sagernet/sing-box@$(awk 
   | grep -oE 'with_[a-zA-Z0-9_]+' | sort -u
 ```
 
-Currently shipped (12):
+Currently shipped (6):
 
 | Tag                   | Unlocks                                        |
 | --------------------- | ---------------------------------------------- |
-| `with_acme`           | ACME certificate provisioning for inbounds     |
-| `with_ccm`            | Apple-CCM service registry                     |
 | `with_clash_api`      | clash REST/WebSocket API (yacd talks to this)  |
-| `with_dhcp`           | DHCP DNS transport                             |
-| `with_grpc`           | gRPC transport                                 |
-| `with_gvisor`         | gVisor netstack for TUN inbound                |
-| `with_ocm`            | Outbound Connection Management                 |
-| `with_quic`           | QUIC transports — Hysteria/Hysteria2/TUIC      |
-| `with_tailscale`      | Tailscale endpoint                             |
-| `with_utls`           | uTLS fingerprinting (and inbound REALITY)      |
-| `with_v2ray_api`      | v2ray stats API                                |
-| `with_wireguard`      | wireguard outbound                             |
+| `with_grpc`           | full gRPC transport (vs. the lite HTTP/2 fallback) |
+| `with_gvisor`         | gVisor + mixed TUN stack (sing-tun ships an iOS-tuned TCP buffer); also enables gVisor for wireguard endpoints |
+| `with_quic`           | QUIC transports — Hysteria/Hysteria2/TUIC, QUIC/HTTP3 DNS |
+| `with_utls`           | uTLS client fingerprinting and client-side REALITY |
+| `with_wireguard`      | wireguard outbound endpoint                    |
 
 Excluded:
 
 | Tag                   | Why                                                                |
 | --------------------- | ------------------------------------------------------------------ |
-| `with_naive_outbound` | Pulls in `sagernet/cronet-go/all`, which has no Go files for iOS.  |
+| `with_acme`           | ACME issuance is for *inbound* TLS servers. iOS NE is client-only. Drops `caddyserver/certmagic`, `caddyserver/zerossl`, `mholt/acmez`, `libdns/*`. |
+| `with_ccm`            | "CCM" service registry runs an HTTP service that proxies the Anthropic Claude API — server-side only. Drops `anthropics/anthropic-sdk-go`. |
+| `with_dhcp`           | `dhcp://auto` DNS transport probes DHCP via a raw socket bound to a named system interface — unreliable from inside the iOS NE sandbox, and iOS configs don't use it. Drops `insomniacslk/dhcp`. |
 | `with_ech`            | Deprecated in 1.13 — ECH moved to Go stdlib; tag's `_stub.go` now intentionally fails the build with that explanation. |
+| `with_naive_outbound` | Pulls in `sagernet/cronet-go/all`, which has no Go files for iOS.  |
+| `with_ocm`            | "OCM" service registry runs an HTTP service that proxies the OpenAI API — server-side only. Drops `openai/openai-go/v3`. |
 | `with_reality_server` | Deprecated in 1.13 — folded into `with_utls`; same intentional-build-error pattern. |
+| `with_tailscale`      | iOS users run the standalone Tailscale app; the sing-box `tailscale` endpoint inside an NE is uncommon, and the `derp` service is server-side. Drops the multi-MB `sagernet/tailscale` tree and its transitive deps (gaissmai/bart, vishvananda/netlink, jsimonetti/rtnetlink, …). |
+| `with_v2ray_api`      | gRPC stats *server* — iOS dashboards talk to the clash API instead. Combined with `with_grpc` retention, the only `google.golang.org/grpc` *server* consumer is gone, but the client transport stays. |
 
 When sing-box adds a new `with_*` stub, the grep above will surface
-it; append to `BUILD_TAGS` in `Scripts/build.sh`. If a new tag's stub
-fails the build the way `with_ech` does, that's sing-box telling you
-the feature has been merged elsewhere.
+it; evaluate it against the "client-only inside a Network Extension"
+filter before appending to `BUILD_TAGS` in `Scripts/build.sh`. If a
+new tag's stub fails the build the way `with_ech` does, that's
+sing-box telling you the feature has been merged elsewhere.
 
 ### sing-box: must pass `include.Context(ctx)` into `box.New`
 
