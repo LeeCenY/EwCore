@@ -33,9 +33,63 @@ away. Side effects:
 
 ## Source patches
 
-None. Xray-core, sing-box, and mihomo all build unmodified from their
-published Go-module tags. See "Future source patches" if that ever
-needs to change.
+Xray-core, sing-box, and mihomo all build unmodified from their
+published Go-module tags. The only sources we modify are two
+transitive deps that fight over `expvar.Publish`.
+
+### tailscale forks: rename five expvar names to coexist
+
+Two tailscale forks land in the dep graph and each runs its own
+init():
+
+- `github.com/sagernet/tailscale` — pulled in by sing-box's DERP
+  service when `with_tailscale` is enabled.
+- `github.com/metacubex/tailscale` — pulled in by mihomo
+  unconditionally.
+
+Both forks ship a copy of `tsweb/varz/varz.go` whose init() calls
+`expvar.Publish` five times with hardcoded names:
+`process_start_unix_time`, `version`, `go_version`,
+`counter_uptime_sec`, `gauge_goroutines`. `expvar.Publish` panics on
+duplicate names — two distinct module paths run two distinct inits
+against the same process-global map → boom on the second:
+
+```
+panic: Reuse of exported var name: process_start_unix_time
+    expvar.Publish(.../tsweb/varz/varz.go:40)
+```
+
+`Scripts/build.sh` rewrites both copies after `go mod tidy`:
+
+1. Resolve each fork's version via `go list -m`.
+2. Copy the module-cache source into `go/.patched/<vendor>-tailscale@<version>/`.
+3. Sed-rewrite the five `expvar.Publish(...)` calls in
+   `tsweb/varz/varz.go` to prefix the published name with the
+   vendor — `sagernet_process_start_unix_time`,
+   `metacubex_version`, etc.
+4. `go mod edit -replace` so the build links the patched copies.
+
+Patched directories are version-suffixed and cached across builds.
+An `EXIT` trap drops the replace directives so `go.mod` stays clean
+in version control. `.patched/` is gitignored.
+
+Nothing in either fork looks these names up by string — they're
+emitted via Prometheus walk in `varz.Handler`, which iterates the
+global `expvar.Map`. Renaming is invisible unless the host app also
+scrapes that handler and pins exact names, which the iOS NE never does.
+
+**On upstream bump.** The patch is keyed on the resolved module
+versions, so a new sing-box or mihomo tag that bumps either fork
+just regenerates `.patched/<vendor>-tailscale@<new-version>/`. The
+five sed targets have been stable in `tsweb/varz/varz.go` for years;
+if a fork ever drops or renames them, `grep -c 'expvar.Publish' \
+.patched/<vendor>-tailscale@.../tsweb/varz/varz.go` will show a
+mismatch and the build will surface it.
+
+**Upstream-correct fix.** A canonical tailscale fork that both
+sing-box and mihomo agree to share would obviate this. Until then,
+the duplication is an unavoidable side effect of running both cores
+in one binary.
 
 ## Wiring quirks per core
 
@@ -163,15 +217,25 @@ mihomo's own logger.
 ## Future source patches
 
 The Go module cache is read-only by design, so patching upstream
-sources in place is not an option. If an upstream change ever requires
-a source-level fix:
+sources in place is not an option. Two paths exist depending on the
+size of the change:
 
-1. Fork the upstream to `github.com/NodePassProject/<repo>` and apply the
-   change on a branch.
+**Build-time sed (preferred for tiny, line-level fixes).** Copy the
+module-cache source into `go/.patched/<vendor>-<repo>@<version>/`,
+apply a `sed` rewrite, and add a transient `replace` directive that
+an `EXIT` trap drops afterwards. See the tailscale-forks entry under
+"Source patches" for the template. No external repo to maintain;
+patch follows the upstream version automatically.
+
+**GitHub fork (for anything bigger).** When a change is too complex
+for in-place sed:
+
+1. Fork the upstream to `github.com/NodePassProject/<repo>` and apply
+   the change on a branch.
 2. Add a `replace` directive to `go/go.mod`:
    `replace github.com/x/y => github.com/NodePassProject/y vX.Y.Z`.
-3. Append a section here describing **why**, **what file**, and **what
-   the upstream-correct fix would be** so we can drop the fork when
-   upstream catches up.
+3. Append a section under "Source patches" describing **why**, **what
+   file**, and **what the upstream-correct fix would be** so we can
+   drop the fork when upstream catches up.
 4. Update `.github/workflows/upstream-watch.yml` to watch the fork's
    `@latest` instead, or to skip that core's auto-bump entirely.
