@@ -3,7 +3,7 @@ module github.com/argsment/everywhere/everywherecore
 go 1.26
 
 require (
-	github.com/metacubex/mihomo v1.19.24
+	github.com/metacubex/mihomo v1.19.25
 	github.com/sagernet/sing v0.8.10
 	github.com/sagernet/sing-box v1.13.12
 	github.com/sagernet/sing-tun v0.8.9
@@ -42,7 +42,7 @@ require (
 	github.com/ericlagergren/subtle v0.0.0-20220507045147-890d697da010 // indirect
 	github.com/florianl/go-nfqueue/v2 v2.0.2 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
-	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
+	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/gaissmai/bart v0.18.0 // indirect
 	github.com/gaukas/godicttls v0.0.4 // indirect
 	github.com/ghodss/yaml v1.0.1-0.20220118164431-d8423dcdf344 // indirect
@@ -55,7 +55,7 @@ require (
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/godbus/dbus/v5 v5.2.2 // indirect
 	github.com/gofrs/uuid/v5 v5.4.0 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
@@ -65,6 +65,7 @@ require (
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hashicorp/yamux v0.1.2 // indirect
 	github.com/hdevalence/ed25519consensus v0.2.0 // indirect
+	github.com/huin/goupnp v1.3.0 // indirect
 	github.com/insomniacslk/dhcp v0.0.0-20260220084031-5adc3eb26f91 // indirect
 	github.com/jsimonetti/rtnetlink v1.4.0 // indirect
 	github.com/juju/ratelimit v1.0.2 // indirect
@@ -94,25 +95,29 @@ require (
 	github.com/metacubex/gvisor v0.0.0-20251227095601-261ec1326fe8 // indirect
 	github.com/metacubex/hkdf v0.1.0 // indirect
 	github.com/metacubex/hpke v0.1.0 // indirect
-	github.com/metacubex/http v0.1.2 // indirect
+	github.com/metacubex/http v0.1.6 // indirect
+	github.com/metacubex/jsonv2 v0.0.0-20260513175203-1c6abea7534c // indirect
 	github.com/metacubex/kcp-go v0.0.0-20260105040817-550693377604 // indirect
 	github.com/metacubex/mhurl v0.1.0 // indirect
 	github.com/metacubex/mlkem v0.1.0 // indirect
-	github.com/metacubex/nftables v0.0.0-20250503052935-30a69ab87793 // indirect
+	github.com/metacubex/nftables v0.0.0-20260426003805-208c2c1ba2cb // indirect
 	github.com/metacubex/qpack v0.6.0 // indirect
 	github.com/metacubex/quic-go v0.59.1-0.20260413153657-53bb22f2c306 // indirect
 	github.com/metacubex/randv2 v0.2.0 // indirect
 	github.com/metacubex/restls-client-go v0.1.7 // indirect
 	github.com/metacubex/sing v0.5.7 // indirect
 	github.com/metacubex/sing-mux v0.3.9 // indirect
-	github.com/metacubex/sing-quic v0.0.0-20260414034501-3ea3410d197a // indirect
+	github.com/metacubex/sing-quic v0.0.0-20260512151354-8475655be853 // indirect
 	github.com/metacubex/sing-shadowsocks v0.2.12 // indirect
 	github.com/metacubex/sing-shadowsocks2 v0.2.7 // indirect
 	github.com/metacubex/sing-shadowtls v0.0.0-20250503063515-5d9f966d17a2 // indirect
-	github.com/metacubex/sing-tun v0.4.17 // indirect
+	github.com/metacubex/sing-tun v0.4.18 // indirect
 	github.com/metacubex/sing-vmess v0.2.5 // indirect
-	github.com/metacubex/sing-wireguard v0.0.0-20250503063753-2dc62acc626f // indirect
+	github.com/metacubex/sing-wireguard v0.0.0-20260507084707-690d479ec947 // indirect
 	github.com/metacubex/smux v0.0.0-20260105030934-d0c8756d3141 // indirect
+	github.com/metacubex/ssh v0.1.0 // indirect
+	github.com/metacubex/tailscale v0.0.0-20260516120020-a21c2c99dcbe // indirect
+	github.com/metacubex/tailscale-wireguard-go v0.0.0-20260513233728-8bc7ee255d04 // indirect
 	github.com/metacubex/tfo-go v0.0.0-20251130171125-413e892ac443 // indirect
 	github.com/metacubex/tls v0.1.5 // indirect
 	github.com/metacubex/utls v1.8.4 // indirect
@@ -186,7 +191,7 @@ require (
 	github.com/sina-ghaderi/rabaead v0.0.0-20220730151906-ab6e06b96e8c // indirect
 	github.com/sina-ghaderi/rabbitio v0.0.0-20220730151941-9ce26f4f872e // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
-	github.com/tailscale/certstore v0.1.1-0.20231202035212-d3fa0460f47e // indirect
+	github.com/tailscale/certstore v0.1.1-0.20260409135935-3638fb84b77d // indirect
 	github.com/tailscale/go-winio v0.0.0-20231025203758-c4f33415bf55 // indirect
 	github.com/tailscale/goupnp v1.0.1-0.20210804011211-c64d0f06ea05 // indirect
 	github.com/tailscale/hujson v0.0.0-20221223112325-20486734a56a // indirect
