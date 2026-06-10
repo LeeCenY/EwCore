@@ -166,23 +166,25 @@ func (p *singBoxPlatform) UsePlatformNotification() bool                  { retu
 func (p *singBoxPlatform) SendNotification(_ *adapter.Notification) error { return nil }
 func (p *singBoxPlatform) MyInterfaceAddress() []netip.Addr               { return p.myAddresses }
 
-func (p *singBoxPlatform) UsePlatformNeighborResolver() bool { return false }
-func (p *singBoxPlatform) StartNeighborMonitor(_ adapter.NeighborUpdateListener) error {
-	return os.ErrInvalid
-}
-func (p *singBoxPlatform) CloseNeighborMonitor(_ adapter.NeighborUpdateListener) error { return nil }
-
-func (p *singBoxPlatform) UsePlatformShell() bool    { return false }
-func (p *singBoxPlatform) CheckPlatformShell() error { return nil }
-func (p *singBoxPlatform) OpenShellSession(_ *adapter.PlatformUser, _ string, _ []string, _ string, _, _ int32) (adapter.ShellSession, error) {
-	return nil, os.ErrInvalid
-}
-func (p *singBoxPlatform) LookupUser(_ string) (*adapter.PlatformUser, error) {
-	return nil, os.ErrInvalid
-}
-func (p *singBoxPlatform) LookupSFTPServer() (string, error)     { return "", os.ErrInvalid }
-func (p *singBoxPlatform) ReadSystemSSHHostKey() ([]byte, error) { return nil, os.ErrInvalid }
-func (p *singBoxPlatform) TailscaleHostname() string             { return "" }
+// Uncomment when upstream-watch bumps to a stable 1.14.
+//
+// func (p *singBoxPlatform) UsePlatformNeighborResolver() bool { return false }
+// func (p *singBoxPlatform) StartNeighborMonitor(_ adapter.NeighborUpdateListener) error {
+// 	return os.ErrInvalid
+// }
+// func (p *singBoxPlatform) CloseNeighborMonitor(_ adapter.NeighborUpdateListener) error { return nil }
+//
+// func (p *singBoxPlatform) UsePlatformShell() bool    { return false }
+// func (p *singBoxPlatform) CheckPlatformShell() error { return nil }
+// func (p *singBoxPlatform) OpenShellSession(_ *adapter.PlatformUser, _ string, _ []string, _ string, _, _ int32) (adapter.ShellSession, error) {
+// 	return nil, os.ErrInvalid
+// }
+// func (p *singBoxPlatform) LookupUser(_ string) (*adapter.PlatformUser, error) {
+// 	return nil, os.ErrInvalid
+// }
+// func (p *singBoxPlatform) LookupSFTPServer() (string, error)     { return "", os.ErrInvalid }
+// func (p *singBoxPlatform) ReadSystemSSHHostKey() ([]byte, error) { return nil, os.ErrInvalid }
+// func (p *singBoxPlatform) TailscaleHostname() string             { return "" }
 
 // singBoxInterfaceMonitor is a tun.DefaultInterfaceMonitor driven from
 // outside Go — typically by an NWPathMonitor on the iOS side feeding
